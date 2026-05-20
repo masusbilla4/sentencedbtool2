@@ -1165,15 +1165,34 @@ def show_shop():
     st.markdown(f"### 🛒 Cart ({len(st.session_state.cart)} items)")
     
     if st.session_state.cart:
-        cart_df = pd.DataFrame(st.session_state.cart, columns=["Sentence", "Category", "Language", "Words"])
-        st.dataframe(cart_df, use_container_width=True, hide_index=True)
+        # Select/deselect all
+        col_sel1, col_sel2 = st.columns([1, 5])
+        with col_sel1:
+            select_all = st.checkbox("Select All", key="cart_select_all")
         
-        col1, col2 = st.columns(2)
+        # Show cart items with checkboxes
+        selected_indices = []
+        for i, item in enumerate(st.session_state.cart):
+            checked = select_all or st.checkbox(
+                f"**{item[0][:60]}{'...' if len(item[0]) > 60 else ''}** — {item[1]} ({item[2]})",
+                key=f"cart_item_{i}",
+                value=select_all
+            )
+            if checked:
+                selected_indices.append(i)
+        
+        st.markdown(f"**{len(selected_indices)} selected** out of {len(st.session_state.cart)} items")
+        
+        col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button("🗑️ Clear Cart"):
-                st.session_state.cart = []
+            if st.button("🗑️ Remove Selected", disabled=len(selected_indices) == 0):
+                st.session_state.cart = [item for i, item in enumerate(st.session_state.cart) if i not in selected_indices]
                 st.rerun()
         with col2:
+            if st.button("🗑️ Clear All"):
+                st.session_state.cart = []
+                st.rerun()
+        with col3:
             if st.button("✅ Checkout & Export", type="primary"):
                 csv_buffer = StringIO()
                 writer = csv.writer(csv_buffer)
