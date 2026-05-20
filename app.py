@@ -969,18 +969,22 @@ def show_home():
     with col1:
         if st.button("➕ Add", use_container_width=True):
             st.session_state.page = "add"
+            st.session_state.nav_select = "➕ Add"
             st.rerun()
     with col2:
         if st.button("🛒 Shop", use_container_width=True):
             st.session_state.page = "shop"
+            st.session_state.nav_select = "🛒 Shop"
             st.rerun()
     with col3:
         if st.button("✏️ Edit", use_container_width=True):
             st.session_state.page = "edit"
+            st.session_state.nav_select = "✏️ Edit"
             st.rerun()
     with col4:
         if st.button("📥 Import", use_container_width=True):
             st.session_state.page = "import"
+            st.session_state.nav_select = "📥 Import"
             st.rerun()
     
     if total > 0:
