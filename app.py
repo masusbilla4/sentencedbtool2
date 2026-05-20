@@ -1028,40 +1028,44 @@ def show_add():
     
     st.markdown("Enter a new sentence to the database")
     
-    sentence = st.text_area("Sentence", height=100, placeholder="Enter your sentence here...")
-    
-    categories = get_categories()
-    category = st.selectbox("Category", options=categories + ["Add New..."])
-    
-    if category == "Add New...":
-        new_category = st.text_input("Enter New Category")
-        if new_category:
-            category = new_category
-    
-    language = st.radio("Language", options=["fil", "en"], format_func=lambda x: "Filipino" if x == "fil" else "English", horizontal=True)
-    
-    if sentence.strip():
-        exists, existing_id, existing_cat, existing_lang = check_sentence_exists(sentence.strip())
+    # Live duplicate check (outside form)
+    preview = st.text_input("Quick check", placeholder="Type to check for duplicates...", key="add_preview")
+    if preview.strip():
+        exists, existing_id, existing_cat, existing_lang = check_sentence_exists(preview.strip())
         if exists:
-            st.warning(f"⚠️ **Duplicate detected!** This sentence already exists:\n\n"
-                      f"- **ID:** {existing_id}\n"
-                      f"- **Category:** {existing_cat}\n"
-                      f"- **Language:** {'Filipino' if existing_lang == 'fil' else 'English'}")
+            st.warning(f"⚠️ Already exists: **{existing_id}** ({existing_cat})")
     
-    if st.button("Add Sentence", type="primary"):
-        if not sentence.strip():
-            st.error("Sentence cannot be empty!")
-        else:
-            exists, existing_id, existing_cat, existing_lang = check_sentence_exists(sentence.strip())
-            if exists:
-                st.error(f"❌ Cannot add: This sentence already exists!")
+    st.divider()
+    
+    with st.form("add_sentence_form", clear_on_submit=True):
+        sentence = st.text_area("Sentence *", height=100, placeholder="Enter your sentence here...")
+        categories = get_categories()
+        category = st.selectbox("Category", options=categories + ["Add New..."])
+        
+        new_category = ""
+        if category == "Add New...":
+            new_category = st.text_input("Enter New Category")
+        
+        language = st.radio("Language", options=["fil", "en"], format_func=lambda x: "Filipino" if x == "fil" else "English", horizontal=True)
+        
+        submitted = st.form_submit_button("Add Sentence", type="primary")
+        
+        if submitted:
+            final_category = new_category if category == "Add New..." and new_category else category
+            if not sentence.strip():
+                st.error("Sentence cannot be empty!")
+            elif category == "Add New..." and not new_category.strip():
+                st.error("Please enter a new category name!")
             else:
-                success, message = insert_sentence(sentence.strip(), category, language)
-                if success:
-                    st.success(f"✅ {message}")
-                    st.rerun()
+                exists, existing_id, existing_cat, existing_lang = check_sentence_exists(sentence.strip())
+                if exists:
+                    st.error(f"❌ Cannot add: This sentence already exists! (ID: {existing_id})")
                 else:
-                    st.error(f"❌ {message}")
+                    success, message = insert_sentence(sentence.strip(), final_category, language)
+                    if success:
+                        st.success(f"✅ {message}")
+                    else:
+                        st.error(f"❌ {message}")
 
 def show_edit():
     st.title("✏️ Edit Sentences")
