@@ -315,16 +315,28 @@ def generate_sen_id(language):
         conn.close()
         return f"{prefix}_{next_num:06d}"
 
+def _clear_cache():
+    """Clear cached data when database changes."""
+    for key in ['_cached_all_data', '_cached_stats', '_cached_remaining', '_cached_categories', '_cached_category_stats']:
+        if key in st.session_state:
+            del st.session_state[key]
+
+def _get_all_data():
+    """Fetch all data from Supabase and cache it."""
+    if st.session_state.db_mode != 'supabase':
+        return None
+    if '_cached_all_data' in st.session_state:
+        return st.session_state._cached_all_data
+    client = get_supabase_client()
+    result = client.table(TABLE_NAME).select("*").execute()
+    st.session_state._cached_all_data = result.data
+    return result.data
+
 def get_stats():
     if st.session_state.db_mode == 'supabase':
-        client = get_supabase_client()
-        
-        result_fil = client.table(TABLE_NAME).select("sen_id", count="exact").eq("language", "fil").execute()
-        fil = result_fil.count if hasattr(result_fil, 'count') else len(result_fil.data)
-        
-        result_eng = client.table(TABLE_NAME).select("sen_id", count="exact").eq("language", "en").execute()
-        eng = result_eng.count if hasattr(result_eng, 'count') else len(result_eng.data)
-        
+        data = _get_all_data()
+        fil = len([r for r in data if r.get('language') == 'fil'])
+        eng = len([r for r in data if r.get('language') == 'en'])
         return fil + eng, eng, fil
     
     else:  # SQLite
@@ -344,14 +356,9 @@ def get_stats():
 
 def get_remaining_stats():
     if st.session_state.db_mode == 'supabase':
-        client = get_supabase_client()
-        
-        result_fil = client.table(TABLE_NAME).select("sen_id", count="exact").eq("language", "fil").eq("used", 0).execute()
-        fil = result_fil.count if hasattr(result_fil, 'count') else len(result_fil.data)
-        
-        result_eng = client.table(TABLE_NAME).select("sen_id", count="exact").eq("language", "en").eq("used", 0).execute()
-        eng = result_eng.count if hasattr(result_eng, 'count') else len(result_eng.data)
-        
+        data = _get_all_data()
+        fil = len([r for r in data if r.get('language') == 'fil' and r.get('used', 0) == 0])
+        eng = len([r for r in data if r.get('language') == 'en' and r.get('used', 0) == 0])
         return fil, eng
     
     else:  # SQLite
@@ -371,14 +378,11 @@ def get_remaining_stats():
 
 def get_categories():
     if st.session_state.db_mode == 'supabase':
-        client = get_supabase_client()
-        result = client.table(TABLE_NAME).select("category").execute()
-        
+        data = _get_all_data()
         categories = set()
-        for row in result.data:
-            if row['category']:
+        for row in data:
+            if row.get('category'):
                 categories.add(row['category'])
-        
         return sorted(list(categories))
     
     else:  # SQLite
@@ -398,11 +402,10 @@ def get_categories():
 
 def get_category_stats():
     if st.session_state.db_mode == 'supabase':
-        client = get_supabase_client()
-        result = client.table(TABLE_NAME).select("*").execute()
+        data = _get_all_data()
         
         categories = set()
-        for row in result.data:
+        for row in data:
             if row.get('category'):
                 categories.add(row['category'])
         
@@ -410,8 +413,8 @@ def get_category_stats():
         for cat in sorted(categories):
             entry = {"category": cat}
             
-            fil_data = [r for r in result.data if r.get('category') == cat and r.get('language') == 'fil']
-            eng_data = [r for r in result.data if r.get('category') == cat and r.get('language') == 'en']
+            fil_data = [r for r in data if r.get('category') == cat and r.get('language') == 'fil']
+            eng_data = [r for r in data if r.get('category') == cat and r.get('language') == 'en']
             
             entry["fil_total"] = len(fil_data)
             entry["fil_used"] = len([r for r in fil_data if r.get('used') == 1])
@@ -511,6 +514,7 @@ def insert_sentence(sentence, category, language):
         client = get_supabase_client()
         try:
             result = client.table(TABLE_NAME).insert(data).execute()
+            _clear_cache()
             return True, f"Added as {sen_id}"
         except Exception as e:
             return False, f"Insert failed: {str(e)}"
@@ -666,11 +670,10 @@ def mark_sentences_as_used(sentences):
 
 def find_duplicate_sentences():
     if st.session_state.db_mode == 'supabase':
-        client = get_supabase_client()
-        result = client.table(TABLE_NAME).select("*").execute()
+        data = _get_all_data()
         
         sentence_groups = {}
-        for row in result.data:
+        for row in data:
             sent = row['sentence']
             if sent not in sentence_groups:
                 sentence_groups[sent] = []
@@ -745,9 +748,8 @@ def get_database_info():
     categories = get_categories()
     
     if st.session_state.db_mode == 'supabase':
-        client = get_supabase_client()
-        result = client.table(TABLE_NAME).select("sentence").execute()
-        sentences = [r['sentence'] for r in result.data]
+        data = _get_all_data()
+        sentences = [r['sentence'] for r in data]
         dup_counts = {}
         duplicates = 0
         for s in sentences:
