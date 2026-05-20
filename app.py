@@ -60,6 +60,18 @@ st.markdown("""
         font-size: 1.8rem;
         font-weight: bold;
     }
+    @media (prefers-color-scheme: dark) {
+        div[data-testid="stMetric"] {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+        }
+        div[data-testid="stMetric"] > label {
+            color: #e2e8f0 !important;
+        }
+        div[data-testid="stMetric"] > div {
+            color: #f8fafc !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
