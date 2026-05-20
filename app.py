@@ -969,22 +969,18 @@ def show_home():
     with col1:
         if st.button("➕ Add", use_container_width=True):
             st.session_state.page = "add"
-            st.session_state.nav_select = "➕ Add"
             st.rerun()
     with col2:
         if st.button("🛒 Shop", use_container_width=True):
             st.session_state.page = "shop"
-            st.session_state.nav_select = "🛒 Shop"
             st.rerun()
     with col3:
         if st.button("✏️ Edit", use_container_width=True):
             st.session_state.page = "edit"
-            st.session_state.nav_select = "✏️ Edit"
             st.rerun()
     with col4:
         if st.button("📥 Import", use_container_width=True):
             st.session_state.page = "import"
-            st.session_state.nav_select = "📥 Import"
             st.rerun()
     
     if total > 0:
@@ -1296,12 +1292,18 @@ def main():
             else:
                 st.markdown("💻 **Connected to Local DB**", help="SQLite local database")
             
-            st.selectbox("Navigate", ["🏠 Home", "➕ Add", "✏️ Edit", "🛒 Shop", "📥 Import", "⚙️ Manage DB"], key="nav_select", label_visibility="collapsed")
-            nav = st.session_state.get("nav_select")
+            nav_options = ["🏠 Home", "➕ Add", "✏️ Edit", "🛒 Shop", "📥 Import", "⚙️ Manage DB"]
             nav_map = {"🏠 Home": "home", "➕ Add": "add", "✏️ Edit": "edit", "🛒 Shop": "shop", "📥 Import": "import", "⚙️ Manage DB": "manage"}
-            if nav and nav_map.get(nav) and nav_map[nav] != st.session_state.page:
-                st.session_state.page = nav_map[nav]
-                st.rerun()
+            page_to_nav = {v: k for k, v in nav_map.items()}
+            current_nav = page_to_nav.get(st.session_state.page, "🏠 Home")
+            default_index = nav_options.index(current_nav) if current_nav in nav_options else 0
+            
+            def on_nav_change():
+                nav = st.session_state.nav_select
+                if nav and nav_map.get(nav):
+                    st.session_state.page = nav_map[nav]
+            
+            st.selectbox("Navigate", nav_options, index=default_index, key="nav_select", on_change=on_nav_change, label_visibility="collapsed")
             if st.session_state.is_admin:
                 if st.button("👥 Manage Users", use_container_width=True):
                     st.session_state.page = "admin_users"
