@@ -23,13 +23,11 @@ try:
 except ImportError:
     SUPABASE_AVAILABLE = False
 
-# ========== HARDCODED SUPABASE CREDENTIALS ==========
-SUPABASE_URL = "https://esgltkrmrztgrxoyvosb.supabase.co"
-SUPABASE_KEY = "sb_secret_YhrRW_1IVm4Ws5dOiZ7kUw_2F5Yn5yo"
-
-# ========== HARDCODED ADMIN CREDENTIALS ==========
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "sepco135"
+# ========== SECRETS (from st.secrets or env) ==========
+SUPABASE_URL = st.secrets.get("SUPABASE_URL", "")
+SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", "")
+ADMIN_USERNAME = st.secrets.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = st.secrets.get("ADMIN_PASSWORD", "")
 
 # ========== USER DATABASE FILE ==========
 USERS_DB_FILE = "users.json"

@@ -12,6 +12,7 @@ build/
 
 # User data
 users.json
+.streamlit/secrets.toml
 
 # Temp files
 temp_import_*.db
