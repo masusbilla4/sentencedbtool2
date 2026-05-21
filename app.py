@@ -980,33 +980,47 @@ def show_home():
     # Square menu buttons with big icons
     st.markdown("""
     <style>
-    div[data-testid="stHorizontalBlock"] > div > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div.stButton > button {
-        min-height: 100px;
+    .square-menu-btn > div.stButton > button {
+        width: 120px !important;
+        height: 120px !important;
         font-size: 1.1rem;
-        border-radius: 12px;
+        border-radius: 16px;
         border: 2px solid #cbd5e1;
         white-space: pre-line;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
     }
     </style>
     """, unsafe_allow_html=True)
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        if st.button("➕\nAdd", use_container_width=True, key="btn_add"):
+        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
+        if st.button("➕\nAdd", key="btn_add"):
             st.session_state.page = "add"
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with col2:
-        if st.button("🛒\nShop", use_container_width=True, key="btn_shop"):
+        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
+        if st.button("🛒\nShop", key="btn_shop"):
             st.session_state.page = "shop"
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with col3:
-        if st.button("✏️\nEdit", use_container_width=True, key="btn_edit"):
+        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
+        if st.button("✏️\nEdit", key="btn_edit"):
             st.session_state.page = "edit"
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     with col4:
-        if st.button("📥\nImport", use_container_width=True, key="btn_import"):
+        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
+        if st.button("📥\nImport", key="btn_import"):
             st.session_state.page = "import"
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
     
     if total > 0:
         with st.expander("📊 Statistics"):
