@@ -1028,16 +1028,18 @@ def show_add():
     
     st.divider()
     
+    # Category & Language selection (outside form for dynamic behavior)
+    categories = get_categories()
+    category = st.selectbox("Category", options=categories + ["Add New..."])
+    
+    new_category = ""
+    if category == "Add New...":
+        new_category = st.text_input("Enter New Category")
+    
+    language = st.radio("Language", options=["fil", "en"], format_func=lambda x: "Filipino" if x == "fil" else "English", horizontal=True)
+    
     with st.form("add_sentence_form", clear_on_submit=True):
         sentence = st.text_area("Sentence *", height=100, placeholder="Enter your sentence here...")
-        categories = get_categories()
-        category = st.selectbox("Category", options=categories + ["Add New..."])
-        
-        new_category = ""
-        if category == "Add New...":
-            new_category = st.text_input("Enter New Category")
-        
-        language = st.radio("Language", options=["fil", "en"], format_func=lambda x: "Filipino" if x == "fil" else "English", horizontal=True)
         
         submitted = st.form_submit_button("Add Sentence", type="primary")
         
