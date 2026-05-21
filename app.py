@@ -977,50 +977,27 @@ def show_home():
     if total > 0:
         st.markdown(f"<p style='text-align: center; color: #64748b;'>{total} sentences · {available} available</p>", unsafe_allow_html=True)
     
-    # Square menu buttons with big icons
-    st.markdown("""
-    <style>
-    .square-menu-btn > div.stButton > button {
-        width: 120px !important;
-        height: 120px !important;
-        font-size: 1.1rem;
-        border-radius: 16px;
-        border: 2px solid #cbd5e1;
-        white-space: pre-line;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
-        if st.button("➕\nAdd", key="btn_add"):
-            st.session_state.page = "add"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col2:
-        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
-        if st.button("🛒\nShop", key="btn_shop"):
-            st.session_state.page = "shop"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col3:
-        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
-        if st.button("✏️\nEdit", key="btn_edit"):
-            st.session_state.page = "edit"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    with col4:
-        st.markdown('<div class="square-menu-btn">', unsafe_allow_html=True)
-        if st.button("📥\nImport", key="btn_import"):
-            st.session_state.page = "import"
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+    # 2x2 tile grid with big buttons
+    _pad1, grid_col, _pad2 = st.columns([1, 2, 1])
+    with grid_col:
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("➕ Add", use_container_width=True, key="btn_add"):
+                st.session_state.page = "add"
+                st.rerun()
+        with col2:
+            if st.button("🛒 Shop", use_container_width=True, key="btn_shop"):
+                st.session_state.page = "shop"
+                st.rerun()
+        col3, col4 = st.columns(2)
+        with col3:
+            if st.button("✏️ Edit", use_container_width=True, key="btn_edit"):
+                st.session_state.page = "edit"
+                st.rerun()
+        with col4:
+            if st.button("📥 Import", use_container_width=True, key="btn_import"):
+                st.session_state.page = "import"
+                st.rerun()
     
     if total > 0:
         with st.expander("📊 Statistics"):
