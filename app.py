@@ -1028,6 +1028,8 @@ def show_add():
     
     st.divider()
     
+    sentence = st.text_area("Sentence *", height=100, placeholder="Enter your sentence here...", key="add_sentence_text")
+    
     try:
         categories = get_categories()
     except Exception:
@@ -1043,8 +1045,6 @@ def show_add():
         new_category = st.text_input("Enter New Category")
     
     language = st.radio("Language", options=["fil", "en"], format_func=lambda x: "Filipino" if x == "fil" else "English", horizontal=True)
-    
-    sentence = st.text_area("Sentence *", height=100, placeholder="Enter your sentence here...", key="add_sentence_text")
     
     if st.button("Add Sentence", type="primary"):
         final_category = new_category if category == "Add New..." and new_category else category
