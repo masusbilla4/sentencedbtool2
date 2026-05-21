@@ -1170,21 +1170,27 @@ def show_shop():
     st.markdown(f"### 🛒 Cart ({len(st.session_state.cart)} items)")
     
     if st.session_state.cart:
-        # Select/deselect all
-        col_sel1, col_sel2 = st.columns([1, 5])
-        with col_sel1:
-            select_all = st.checkbox("Select All", key="cart_select_all")
+        # Build cart dataframe
+        cart_df = pd.DataFrame(st.session_state.cart, columns=["Sentence", "Category", "Language", "Word Count"])
+        cart_df["#"] = range(1, len(st.session_state.cart) + 1)
+        cart_df["Language"] = cart_df["Language"].map({"fil": "🇵🇭 Filipino", "en": "🇬🇧 English"})
+        cart_df = cart_df[["#", "Sentence", "Category", "Language", "Word Count"]]
         
-        # Show cart items with checkboxes
+        # Display as table
+        st.dataframe(cart_df, use_container_width=True, hide_index=True, height=min(400, 35 * len(st.session_state.cart) + 40))
+        
+        # Selection for deletion
+        st.markdown("**Select items to remove:**")
+        select_all = st.checkbox("Select All", key="cart_select_all")
+        
         selected_indices = []
+        cols = st.columns(4)
         for i, item in enumerate(st.session_state.cart):
-            checked = select_all or st.checkbox(
-                f"**{item[0][:60]}{'...' if len(item[0]) > 60 else ''}** — {item[1]} ({item[2]})",
-                key=f"cart_item_{i}",
-                value=select_all
-            )
-            if checked:
-                selected_indices.append(i)
+            col_idx = i % 4
+            with cols[col_idx]:
+                short_text = item[0][:30] + "..." if len(item[0]) > 30 else item[0]
+                if select_all or st.checkbox(f"#{i+1} {short_text}", value=select_all, key=f"cart_item_{i}"):
+                    selected_indices.append(i)
         
         st.markdown(f"**{len(selected_indices)} selected** out of {len(st.session_state.cart)} items")
         
