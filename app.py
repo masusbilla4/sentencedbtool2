@@ -1026,13 +1026,6 @@ def show_add():
     
     st.markdown("Enter a new sentence to the database")
     
-    # Live duplicate check (outside form)
-    preview = st.text_input("Quick check", placeholder="Type to check for duplicates...", key="add_preview")
-    if preview.strip():
-        exists, existing_id, existing_cat, existing_lang = check_sentence_exists(preview.strip())
-        if exists:
-            st.warning(f"⚠️ Already exists: **{existing_id}** ({existing_cat})")
-    
     st.divider()
     
     with st.form("add_sentence_form", clear_on_submit=True):
