@@ -977,36 +977,51 @@ def show_home():
     if total > 0:
         st.markdown(f"<p style='text-align: center; color: #64748b;'>{total} sentences · {available} available</p>", unsafe_allow_html=True)
     
-    # 2x2 tile grid with big buttons
-    _pad1, grid_col, _pad2 = st.columns([1, 2, 1])
-    with grid_col:
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("➕ Add", use_container_width=True, key="btn_add"):
-                st.session_state.page = "add"
-                st.rerun()
-        with col2:
-            if st.button("🛒 Shop", use_container_width=True, key="btn_shop"):
-                st.session_state.page = "shop"
-                st.rerun()
-        col3, col4 = st.columns(2)
-        with col3:
-            if st.button("✏️ Edit", use_container_width=True, key="btn_edit"):
-                st.session_state.page = "edit"
-                st.rerun()
-        with col4:
-            if st.button("📥 Import", use_container_width=True, key="btn_import"):
-                st.session_state.page = "import"
-                st.rerun()
-        col5, col6 = st.columns(2)
-        with col5:
-            if st.button("📊 Stats", use_container_width=True, key="btn_stats"):
-                st.session_state.page = "stats"
-                st.rerun()
-        with col6:
-            if st.button("⚙️ Manage", use_container_width=True, key="btn_manage"):
-                st.session_state.page = "manage"
-                st.rerun()
+    # Big tile buttons with CSS styling
+    st.markdown("""
+    <style>
+    .stButton > button {
+        min-height: 160px !important;
+        font-size: 2.5rem !important;
+        border-radius: 20px !important;
+        border: 3px solid #cbd5e1 !important;
+        line-height: 1.2 !important;
+    }
+    .stButton > button p {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        margin-top: 8px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("➕\nAdd", use_container_width=True, key="btn_add"):
+            st.session_state.page = "add"
+            st.rerun()
+    with col2:
+        if st.button("🛒\nShop", use_container_width=True, key="btn_shop"):
+            st.session_state.page = "shop"
+            st.rerun()
+    col3, col4 = st.columns(2)
+    with col3:
+        if st.button("✏️\nEdit", use_container_width=True, key="btn_edit"):
+            st.session_state.page = "edit"
+            st.rerun()
+    with col4:
+        if st.button("📥\nImport", use_container_width=True, key="btn_import"):
+            st.session_state.page = "import"
+            st.rerun()
+    col5, col6 = st.columns(2)
+    with col5:
+        if st.button("📊\nStats", use_container_width=True, key="btn_stats"):
+            st.session_state.page = "stats"
+            st.rerun()
+    with col6:
+        if st.button("⚙️\nManage", use_container_width=True, key="btn_manage"):
+            st.session_state.page = "manage"
+            st.rerun()
 
 def show_add():
     st.title("➕ Add New Sentence")
