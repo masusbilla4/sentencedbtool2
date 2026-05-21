@@ -998,28 +998,15 @@ def show_home():
             if st.button("📥 Import", use_container_width=True, key="btn_import"):
                 st.session_state.page = "import"
                 st.rerun()
-    
-    if total > 0:
-        with st.expander("📊 Statistics"):
-            st.markdown(f"🇵🇭 **{fil}** Filipino ({fil_remaining} available) · 🇬🇧 **{eng}** English ({eng_remaining} available)")
-            stats = get_category_stats()
-            if stats:
-                used_fil = sum(e["fil_used"] for e in stats)
-                used_eng = sum(e["eng_used"] for e in stats)
-                st.markdown(f"Used: 🇵🇭 {used_fil} · 🇬🇧 {used_eng} · 📁 {len(stats)} categories")
-                df_data = []
-                for entry in stats:
-                    total_cat = entry["fil_total"] + entry["eng_total"]
-                    used_cat = entry["fil_used"] + entry["eng_used"]
-                    pct = (used_cat * 100 // total_cat) if total_cat > 0 else 0
-                    df_data.append({
-                        "Category": entry["category"],
-                        "FIL": f"{entry['fil_used']}/{entry['fil_total']}",
-                        "ENG": f"{entry['eng_used']}/{entry['eng_total']}",
-                        "Progress": f"{pct}%"
-                    })
-                df = pd.DataFrame(df_data)
-                st.dataframe(df, use_container_width=True, hide_index=True)
+        col5, col6 = st.columns(2)
+        with col5:
+            if st.button("📊 Stats", use_container_width=True, key="btn_stats"):
+                st.session_state.page = "stats"
+                st.rerun()
+        with col6:
+            if st.button("⚙️ Manage", use_container_width=True, key="btn_manage"):
+                st.session_state.page = "manage"
+                st.rerun()
 
 def show_add():
     st.title("➕ Add New Sentence")
@@ -1250,6 +1237,41 @@ def show_import():
         csv_data = export_to_csv_string()
         st.download_button(label="📥 Download CSV", data=csv_data, file_name="database_export.csv", mime="text/csv")
 
+def show_stats():
+    st.title("📊 Statistics")
+    
+    if st.button("← Back to Home"):
+        st.session_state.page = "home"
+        st.rerun()
+    
+    total, eng, fil = get_stats()
+    fil_remaining, eng_remaining = get_remaining_stats()
+    
+    st.markdown(f"🇵🇭 **{fil}** Filipino ({fil_remaining} available) · 🇬🇧 **{eng}** English ({eng_remaining} available)")
+    
+    stats = get_category_stats()
+    if stats:
+        used_fil = sum(e["fil_used"] for e in stats)
+        used_eng = sum(e["eng_used"] for e in stats)
+        st.markdown(f"Used: 🇵🇭 {used_fil} · 🇬🇧 {used_eng} · 📁 {len(stats)} categories")
+        
+        st.divider()
+        df_data = []
+        for entry in stats:
+            total_cat = entry["fil_total"] + entry["eng_total"]
+            used_cat = entry["fil_used"] + entry["eng_used"]
+            pct = (used_cat * 100 // total_cat) if total_cat > 0 else 0
+            df_data.append({
+                "Category": entry["category"],
+                "FIL": f"{entry['fil_used']}/{entry['fil_total']}",
+                "ENG": f"{entry['eng_used']}/{entry['eng_total']}",
+                "Progress": f"{pct}%"
+            })
+        df = pd.DataFrame(df_data)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No statistics available yet.")
+
 def show_manage():
     st.title("⚙️ Database Management")
     
@@ -1332,8 +1354,8 @@ def main():
             else:
                 st.markdown("💻 **Connected to Local DB**", help="SQLite local database")
             
-            nav_options = ["🏠 Home", "➕ Add", "✏️ Edit", "🛒 Shop", "📥 Import", "⚙️ Manage DB"]
-            nav_map = {"🏠 Home": "home", "➕ Add": "add", "✏️ Edit": "edit", "🛒 Shop": "shop", "📥 Import": "import", "⚙️ Manage DB": "manage"}
+            nav_options = ["🏠 Home", "➕ Add", "✏️ Edit", "🛒 Shop", "📥 Import", "📊 Stats", "⚙️ Manage DB"]
+            nav_map = {"🏠 Home": "home", "➕ Add": "add", "✏️ Edit": "edit", "🛒 Shop": "shop", "📥 Import": "import", "📊 Stats": "stats", "⚙️ Manage DB": "manage"}
             page_to_nav = {v: k for k, v in nav_map.items()}
             current_nav = page_to_nav.get(st.session_state.page, "🏠 Home")
             default_index = nav_options.index(current_nav) if current_nav in nav_options else 0
@@ -1383,6 +1405,8 @@ def main():
             show_shop()
         elif st.session_state.page == "import":
             show_import()
+        elif st.session_state.page == "stats":
+            show_stats()
         elif st.session_state.page == "manage":
             show_manage()
 
