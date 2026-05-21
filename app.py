@@ -1026,8 +1026,6 @@ def show_add():
     
     st.markdown("Enter a new sentence to the database")
     
-    st.divider()
-    
     sentence = st.text_area("Sentence *", height=100, placeholder="Enter your sentence here...", key="add_sentence_text")
     
     try:
