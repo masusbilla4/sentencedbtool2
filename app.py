@@ -1038,27 +1038,27 @@ def show_add():
     
     language = st.radio("Language", options=["fil", "en"], format_func=lambda x: "Filipino" if x == "fil" else "English", horizontal=True)
     
-    with st.form("add_sentence_form", clear_on_submit=True):
-        sentence = st.text_area("Sentence *", height=100, placeholder="Enter your sentence here...")
-        
-        submitted = st.form_submit_button("Add Sentence", type="primary")
-        
-        if submitted:
-            final_category = new_category if category == "Add New..." and new_category else category
-            if not sentence.strip():
-                st.error("Sentence cannot be empty!")
-            elif category == "Add New..." and not new_category.strip():
-                st.error("Please enter a new category name!")
+    sentence = st.text_area("Sentence *", height=100, placeholder="Enter your sentence here...", key="add_sentence_text")
+    
+    if st.button("Add Sentence", type="primary"):
+        final_category = new_category if category == "Add New..." and new_category else category
+        if not sentence.strip():
+            st.error("Sentence cannot be empty!")
+        elif category == "Add New..." and not new_category.strip():
+            st.error("Please enter a new category name!")
+        else:
+            exists, existing_id, existing_cat, existing_lang = check_sentence_exists(sentence.strip())
+            if exists:
+                st.error(f"❌ Cannot add: This sentence already exists! (ID: {existing_id})")
             else:
-                exists, existing_id, existing_cat, existing_lang = check_sentence_exists(sentence.strip())
-                if exists:
-                    st.error(f"❌ Cannot add: This sentence already exists! (ID: {existing_id})")
+                success, message = insert_sentence(sentence.strip(), final_category, language)
+                if success:
+                    st.success(f"✅ {message}")
+                    # Clear the input after successful add
+                    st.session_state.add_sentence_text = ""
+                    st.rerun()
                 else:
-                    success, message = insert_sentence(sentence.strip(), final_category, language)
-                    if success:
-                        st.success(f"✅ {message}")
-                    else:
-                        st.error(f"❌ {message}")
+                    st.error(f"❌ {message}")
 
 def show_edit():
     st.title("✏️ Edit Sentences")
