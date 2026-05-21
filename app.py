@@ -977,21 +977,34 @@ def show_home():
     if total > 0:
         st.markdown(f"<p style='text-align: center; color: #64748b;'>{total} sentences · {available} available</p>", unsafe_allow_html=True)
     
+    # Square menu buttons with big icons
+    st.markdown("""
+    <style>
+    div[data-testid="stHorizontalBlock"] > div > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] > div.stButton > button {
+        min-height: 100px;
+        font-size: 1.1rem;
+        border-radius: 12px;
+        border: 2px solid #cbd5e1;
+        white-space: pre-line;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        if st.button("➕ Add", use_container_width=True):
+        if st.button("➕\nAdd", use_container_width=True, key="btn_add"):
             st.session_state.page = "add"
             st.rerun()
     with col2:
-        if st.button("🛒 Shop", use_container_width=True):
+        if st.button("🛒\nShop", use_container_width=True, key="btn_shop"):
             st.session_state.page = "shop"
             st.rerun()
     with col3:
-        if st.button("✏️ Edit", use_container_width=True):
+        if st.button("✏️\nEdit", use_container_width=True, key="btn_edit"):
             st.session_state.page = "edit"
             st.rerun()
     with col4:
-        if st.button("📥 Import", use_container_width=True):
+        if st.button("📥\nImport", use_container_width=True, key="btn_import"):
             st.session_state.page = "import"
             st.rerun()
     
