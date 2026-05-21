@@ -977,20 +977,20 @@ def show_home():
     if total > 0:
         st.markdown(f"<p style='text-align: center; color: #64748b;'>{total} sentences · {available} available</p>", unsafe_allow_html=True)
     
-    # Big tile buttons with CSS styling
+    # Tile buttons with CSS styling
     st.markdown("""
     <style>
     .stButton > button {
-        min-height: 160px !important;
-        font-size: 2.5rem !important;
-        border-radius: 20px !important;
-        border: 3px solid #cbd5e1 !important;
-        line-height: 1.2 !important;
+        min-height: 90px !important;
+        font-size: 1.8rem !important;
+        border-radius: 14px !important;
+        border: 2px solid #cbd5e1 !important;
+        line-height: 1.3 !important;
     }
     .stButton > button p {
-        font-size: 1.1rem !important;
+        font-size: 0.95rem !important;
         font-weight: 600 !important;
-        margin-top: 8px !important;
+        margin-top: 4px !important;
     }
     </style>
     """, unsafe_allow_html=True)
