@@ -1028,8 +1028,14 @@ def show_add():
     
     st.divider()
     
-    # Category & Language selection (outside form for dynamic behavior)
-    categories = get_categories()
+    try:
+        categories = get_categories()
+    except Exception:
+        categories = []
+    
+    if not categories:
+        categories = ["General"]
+    
     category = st.selectbox("Category", options=categories + ["Add New..."])
     
     new_category = ""
@@ -1047,18 +1053,20 @@ def show_add():
         elif category == "Add New..." and not new_category.strip():
             st.error("Please enter a new category name!")
         else:
-            exists, existing_id, existing_cat, existing_lang = check_sentence_exists(sentence.strip())
-            if exists:
-                st.error(f"❌ Cannot add: This sentence already exists! (ID: {existing_id})")
-            else:
-                success, message = insert_sentence(sentence.strip(), final_category, language)
-                if success:
-                    st.success(f"✅ {message}")
-                    # Clear the input after successful add
-                    st.session_state.add_sentence_text = ""
-                    st.rerun()
+            try:
+                exists, existing_id, existing_cat, existing_lang = check_sentence_exists(sentence.strip())
+                if exists:
+                    st.error(f"❌ Cannot add: This sentence already exists! (ID: {existing_id})")
                 else:
-                    st.error(f"❌ {message}")
+                    success, message = insert_sentence(sentence.strip(), final_category, language)
+                    if success:
+                        st.success(f"✅ {message}")
+                        st.session_state.add_sentence_text = ""
+                        st.rerun()
+                    else:
+                        st.error(f"❌ {message}")
+            except Exception as e:
+                st.error(f"❌ Error: {str(e)}")
 
 def show_edit():
     st.title("✏️ Edit Sentences")
