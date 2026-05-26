@@ -23,11 +23,11 @@ try:
 except ImportError:
     SUPABASE_AVAILABLE = False
 
-# ========== SECRETS (from st.secrets or env) ==========
-SUPABASE_URL = st.secrets.get("SUPABASE_URL", "")
-SUPABASE_KEY = st.secrets.get("SUPABASE_KEY", "")
-ADMIN_USERNAME = st.secrets.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = st.secrets.get("ADMIN_PASSWORD", "")
+# ========== SECRETS (from environment variables) ==========
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY", "")
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
 
 # ========== USER DATABASE FILE ==========
 USERS_DB_FILE = "users.json"
